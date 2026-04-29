@@ -140,7 +140,7 @@ transition: opacity 0.5s;
 opacity: 0;
 background: transparent;
 border: none;
-color: #cbd5e1;
+color: #dbe2eb;
 padding: 0.5rem;
 border-radius: 50%;
 cursor: pointer;
@@ -155,8 +155,8 @@ height: 40px;
 .todo-item:hover .delete-button { opacity: 1; }
 
 .delete-button:hover {
-background: #fef2f2;
-color: #ef4444;
+background: #ffffff;
+color: #b40000;
 }
 
 .rotating {
@@ -187,4 +187,36 @@ background: white;
 padding: 0.25rem 0.5rem;
 border-radius: 0.25rem;
 border: 1px solid #e2e8f0;
+}
+
+
+.todo-bullet {
+height: 1.5rem;
+width: 1.5rem;
+border-radius: 50%;
+border: 2px solid #cbd5e1;
+display: flex;
+align-items: center;
+justify-content: center;
+transition: all 0.2s ease;
+background: white;
+}
+
+.todo-bullet.done {
+background: #10b981;
+border-color: #10b981;
+}
+
+
+.line-through {
+text-decoration: line-through;
+color: #94a3b8 !important;
+}
+
+.opacity-50 {
+opacity: 0.5;
+}
+
+.todo-item:hover .todo-bullet:not(.done) {
+border-color: #3b82f6;
 }

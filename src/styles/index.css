@@ -220,3 +220,139 @@ opacity: 0.5;
 .todo-item:hover .todo-bullet:not(.done) {
 border-color: #3b82f6;
 }
+
+/* Estilos del Modal */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(15, 23, 42, 0.5);
+    backdrop-filter: blur(8px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.glass-modal {
+    background: white;
+    border-radius: 1.5rem;
+    padding: 2.5rem;
+    width: 90%;
+    max-width: 420px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    text-align: left;
+    border: 1px solid #f1f5f9;
+}
+
+.modal-title {
+    margin-bottom: 15px;
+    color: #1e293b;
+    font-weight: 800;
+}
+
+.modal-input {
+    width: 100%;
+    padding: 1rem;
+    border-radius: 0.75rem;
+    border: 2px solid #e2e8f0;
+    outline: none;
+    font-size: 1.1rem;
+    background: #f8fafc;
+    margin-top: 10px;
+    transition: border-color 0.2s;
+}
+
+.modal-input:focus {
+    border-color: #a304ff;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+.cancel-button {
+    
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.75rem;
+    border: none;
+    cursor: pointer;
+    background: #f1f5f9;
+    color: #64748b;
+    font-weight: 600;
+    transition: all 0.2s ease-in-out;
+    outline: none;
+    box-shadow: 0 2px 4px -1px rgba(1, 153, 255, 0.89);
+}
+
+.cancel-button:hover {
+    opacity: 0.8;
+    background-color: #e2e8f0; 
+}
+
+.cancel-button:active {
+    transform: scale(0.95); 
+}
+
+.save-button {
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.75rem;
+    border: none;
+    cursor: pointer;
+    background: #201d22;
+    color: white;
+    font-weight: 600;
+    box-shadow: 0 2px 4px -1px rgb(4, 241, 142);
+    transition: all 0.2s ease-in-out;
+    outline: none;
+}
+
+.save-button:active{
+  transform: scale(0.95);  
+}
+.save-button:hover{
+    opacity: 0.8;
+    background-color: #00ff2aee; 
+}
+
+.save-button:disabled {
+    opacity: 0.7;
+    cursor: wait;
+}
+
+.todo-actions {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+}
+
+.edit-button-hover {
+    opacity: 0;
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    padding: 0.5rem;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+}
+
+.todo-item:hover .edit-button-hover {
+    opacity: 1;
+}
+
+.edit-button-hover:hover {
+    background: #f1f5f9;
+    color: #8c3bf6;
+}
+

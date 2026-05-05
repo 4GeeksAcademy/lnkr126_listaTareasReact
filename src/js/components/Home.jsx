@@ -1,36 +1,37 @@
 import React, { useState, useEffect } from "react";
-import { X, Plus, ClipboardList, Loader2, Check } from 'lucide-react';
+import { X, Plus, ClipboardList, Loader2, Check, Pencil } from 'lucide-react';
 
 const Home = () => {
-    
     const [inputValue, setInputValue] = useState("");
     const [deletingId, setDeletingId] = useState(null);
-    const [updatingId, setUpdatingId] = useState (null)
-    const [todos, setTodos] = useState ([]);
-    const [isLoading, setIsLoading] = useState(false)
-    const userName = "lnkr";
+    const [updatingId, setUpdatingId] = useState(null);
+    const [list, setList] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const userName = "lainneker";
 
-    //GET
-	async function getTasks () {
-        setIsLoading (true);
+    // ESTADOS PARA EL MODAL
+    const [openModal, setOpenModal] = useState(false);
+    const [editValue, setEditValue] = useState("");
+    const [currentTodo, setCurrentTodo] = useState(null);
+
+    // METODO GET
+    async function getTasks() {
+        setIsLoading(true);
         try {
-            let response = await fetch (`https://playground.4geeks.com/todo/users/${userName}`);
+            let response = await fetch(`https://playground.4geeks.com/todo/users/${userName}`);
             if (response.ok) {
                 let data = await response.json();
-                setTodos(data.todos);
-                console.log("data", data)
+                setList(data.todos);
             }
-            
         } catch (error) {
-            console.error ("Error cargando tareas:", error);
+            console.error("Error cargando tareas:", error);
         } finally {
-            setIsLoading (false);
+            setIsLoading(false);
         }
-	}
+    }
 
-    //POST
-    
-    async function postTask () {
+    // POST
+    async function postTask() {
         if (inputValue.trim() === "") return;
 
         let newTask = {
@@ -39,34 +40,33 @@ const Home = () => {
         };
 
         try {
-            let response = await fetch ( `https://playground.4geeks.com/todo/todos/${userName}`, {
+            let response = await fetch(`https://playground.4geeks.com/todo/todos/${userName}`, {
                 method: "POST",
                 body: JSON.stringify(newTask),
                 headers: { "Content-Type": "application/json" }
             });
         
-            if (response.ok){
-            let dataPost = await response.json(); 
-            setTodos([...todos,dataPost]);
-            setInputValue("");
-             }
+            if (response.ok) {
+                let dataPost = await response.json(); 
+                setList([...list, dataPost]);
+                setInputValue("");
+            }
         } catch (error) {
-            console.error("Error al crear:",error);
-        }     
- }
+            console.error("Error al crear:", error);
+        }    
+    }
 
- //DELETE
- const deleteTask = async (idToDelete) => {
+    // DELETE
+    const deleteTask = async (idToDelete) => {
         setDeletingId(idToDelete);
-        
         try {
             let response = await fetch(`https://playground.4geeks.com/todo/todos/${idToDelete}`, {
                 method: "DELETE"
             });
 
             if (response.ok) {
-                const newTodos = todos.filter((todo) => todo.id !== idToDelete);
-                setTodos(newTodos);
+                const newList = list.filter((todo) => todo.id !== idToDelete);
+                setList(newList);
             }
         } catch (error) {
             console.error("Error al borrar:", error);
@@ -75,67 +75,87 @@ const Home = () => {
         }
     };
 
-//PUT
+    // PUT
+    const updateTask = async (todoId, newLabel, isDone) => {
+        setUpdatingId(todoId);
+        const updatedTask = { label: newLabel, is_done: isDone };
 
-const toggleTaskDone = async (todo) => {
-         setUpdatingId(todo.id);
-
-         const updatedTask = {
-            label: todo.label,
-            is_done: !todo.is_done
-         };
-
-         try {
-            let response = await fetch (`https://playground.4geeks.com/todo/todos/${todo.id}`, {
+        try {
+            let response = await fetch(`https://playground.4geeks.com/todo/todos/${todoId}`, {
                 method: "PUT",
-                body: JSON.stringify (updatedTask),
+                body: JSON.stringify(updatedTask),
                 headers: { "Content-Type": "application/json" }
-         });
+            });
 
-         if (response.ok) {
-            let dataPut = await response.json ();
-            const newTodos = todos.map (t => t.id === todo.id ? dataPut : t);
-            setTodos(newTodos);
-         }
-    } catch (error) {
-    console.error ("Error al actualizar:", error);
-    } finally {
-    setUpdatingId (null);
+            if (response.ok) {
+                let dataPut = await response.json();
+                setList(list.map(t => t.id === todoId ? dataPut : t));
+                setOpenModal(false); 
+            }
+        } catch (error) {
+            console.error("Error al actualizar:", error);
+        } finally {
+            setUpdatingId(null); 
         }
+    };
 
-};
-useEffect (() => {
-    getTasks ();
-}, []);
-    console.log (todos)
-    
+    const openEditModal = (todo) => {
+        setCurrentTodo(todo);
+        setEditValue(todo.label);
+        setOpenModal(true);
+    };
+
+    useEffect(() => {
+        getTasks();
+    }, []);
+
     const handleKeyDown = (e) => {
         if (e.key === "Enter") {
             postTask();
         }
     };
-console.log(todos)
 
     return (
         <div className="todo-container">
-        {isLoading && (
-            <div className="loading-overlay">
-                <Loader2 className="rotating" /> 
-                <span>Cargando...</span>
-            </div>
-        )}
+            {isLoading && (
+                <div className="loading-overlay">
+                    <Loader2 className="rotating" /> 
+                    <span>Cargando...</span>
+                </div>
+            )}
+
+            {openModal && (
+                <div className="modal-overlay">
+                    <div className="glass-modal">
+                        <h3 className="modal-title">Editar Tarea</h3>
+                        <input 
+                            type="text" 
+                            value={editValue} 
+                            onChange={(e) => setEditValue(e.target.value)}
+                            className="modal-input"
+                            autoFocus
+                        />
+                        <div className="modal-actions">
+                            <button onClick={() => setOpenModal(false)} className="cancel-button">Cancelar</button>
+                            <button 
+                                onClick={() => updateTask(currentTodo.id, editValue, currentTodo.is_done)} 
+                                className="save-button"
+                                disabled={updatingId !== null}
+                            >
+                                {updatingId !== null ? "Guardando..." : "Guardar"}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <div className="todo-wrapper">
-                
                 <div className="todo-header">
-                    <h1 className="todo-title">
-                        Tareas<span className="dot">.</span>
-                    </h1>
+                    <h1 className="todo-title">Tareas<span className="dot">.</span></h1>
                     <p className="todo-subtitle">Organiza tu día de forma creativa y sencilla</p>
                 </div>
                 
-                
                 <div className="todo-card">
-                    
                     <div className="input-group">
                         <div className="input-icon">
                             <Plus size={24} />
@@ -157,46 +177,56 @@ console.log(todos)
 
                     <div className="todo-list-container">
                         <ul className="todo-list">
-                            {todos.length === 0 ? (
+                            {list.length === 0 ? (
                                 <li className="empty-state">
                                     <ClipboardList size={48} className="empty-icon" />
                                     <p>No hay tareas pendientes</p>
                                 </li>
                             ) : (
-                                todos.map((todo) => (
+                                list.map((todo) => (
                                     <li key={todo.id} className={`todo-item ${deletingId === todo.id ? 'deleting' : ''}`} >
-                                        <div className="todo-content" onClick={ () => toggleTaskDone (todo)} 
-                                        style={{cursor: updatingId === todo.id ? 'wait' : 'pointer',
-                                             pointerEvents: updatingId === todo.id ? 'none' : 'auto' }}
-                                            >
+                                        <div className="todo-content" onClick={() => updateTask(todo.id, todo.label, !todo.is_done)} 
+                                            style={{
+                                                cursor: updatingId === todo.id ? 'wait' : 'pointer',
+                                                pointerEvents: updatingId === todo.id ? 'none' : 'auto' 
+                                            }}
+                                        >
                                             <div className={`todo-bullet ${todo.is_done ? 'done' : ''}`}>
                                                 {updatingId === todo.id ? (
                                                     <Loader2 size={12} className="rotating" />
                                                 ) : todo.is_done ? (
-                                                    <Check size={14} strokeWidth={3} />
+                                                    <Check size={14} strokeWidth={3} color="white" />
                                                 ) : null}
                                             </div>
-                                            <span className={`todo-text ${ todo.is_done ? 'line-through' : ''} `}>{todo.label}</span>
+                                            <span className={`todo-text ${todo.is_done ? 'line-through' : ''}`}>
+                                                {todo.label}
+                                            </span>
                                         </div>
                                         
-                                        <button
-                                            onClick={() => deleteTask (todo.id)}
-                                            disabled={deletingId === todo.id}
-                                            className="delete-button"
-                                            aria-label="Eliminar tarea"
-                                        >
-                                            <X 
-                                                size={20} 
-                                                className={deletingId === todo.id ? 'rotating' : ''} 
-                                            />
-                                        </button>
+                                        <div className="todo-actions">
+                                            <button
+                                                onClick={(e) => { e.stopPropagation(); openEditModal(todo); }}
+                                                className="edit-button-hover"
+                                                aria-label="Editar tarea"
+                                            >
+                                                <Pencil size={18} />
+                                            </button>
+
+                                            <button
+                                                onClick={() => deleteTask(todo.id)}
+                                                disabled={deletingId === todo.id}
+                                                className="delete-button"
+                                                aria-label="Eliminar tarea"
+                                            >
+                                                <X size={20} className={deletingId === todo.id ? 'rotating' : ''} />
+                                            </button>
+                                        </div> 
                                     </li>
                                 ))
                             )}
                         </ul>
                     </div>
                 </div>
-                
                 
                 <p className="todo-footer-note">
                     Presiona <span className="key-hint">Enter</span> para añadir a la lista
